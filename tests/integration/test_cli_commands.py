@@ -17,9 +17,11 @@ import pytest
 import avfm.cli as cli
 from avfm.capture.base import FrameSource
 from avfm.cli import main
+from avfm.config import AppConfig
 from avfm.detection.base import FaceDetector
 from avfm.detection.factory import DetectorSet
 from avfm.detection.fake import FakeDetector
+from avfm.errors import DependencyMissingError
 from avfm.types import BBox, FaceDetection, Frame, RunReport
 from tests.helpers import REPO_ROOT, make_eye_landmarks, make_frame
 
@@ -244,16 +246,64 @@ def test_selftest_text_output(capsys: pytest.CaptureFixture[str]) -> None:
 
 
 @pytest.mark.model
-def test_detect_auto_backend_annotation_and_text(
+def test_detect_yunet_annotation_and_text(
     tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
     if not YUNET_MODEL.exists():
         pytest.skip("YuNet model not downloaded")
     annotated = tmp_path / "annotated.png"
-    assert main(["detect", "--source", f"image:{ASTRONAUT}", "--annotate", str(annotated)]) == 0
+    assert (
+        main(
+            [
+                "detect",
+                "--source",
+                f"image:{ASTRONAUT}",
+                "--detector",
+                "yunet",
+                "--annotate",
+                str(annotated),
+            ]
+        )
+        == 0
+    )
     captured = capsys.readouterr()
     assert "face(s) in" in captured.out
     assert annotated.exists()
+
+
+def test_resolve_single_backend_auto_prefers_mediapipe(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(cli, "mediapipe_available", lambda: True)
+    monkeypatch.setattr(cli, "model_ready", lambda spec, configured, root=None: True)
+    assert cli._resolve_single_backend(AppConfig()) == "mediapipe"
+
+
+def test_resolve_single_backend_auto_falls_back_to_yunet(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(cli, "mediapipe_available", lambda: False)
+    monkeypatch.setattr(cli, "model_ready", lambda spec, configured, root=None: True)
+    assert cli._resolve_single_backend(AppConfig()) == "yunet"
+
+
+def test_resolve_single_backend_auto_raises_without_models(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(cli, "mediapipe_available", lambda: False)
+    monkeypatch.setattr(cli, "model_ready", lambda spec, configured, root=None: False)
+    with pytest.raises(DependencyMissingError):
+        cli._resolve_single_backend(AppConfig())
+
+
+def test_resolve_single_backend_respects_explicit_choice(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    config = AppConfig()
+    config.detector.backend = "yunet"
+    monkeypatch.setattr(cli, "mediapipe_available", lambda: True)
+    monkeypatch.setattr(cli, "model_ready", lambda spec, configured, root=None: True)
+    assert cli._resolve_single_backend(config) == "yunet"
 
 
 def test_detect_landmark_metrics(
