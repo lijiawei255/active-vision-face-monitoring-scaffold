@@ -53,6 +53,7 @@ dev = [
   "pytest-cov>=5,<8",
   "pytest-timeout>=2,<3",
   "ruff>=0.6,<1",
+  "mypy>=1.11,<2",
   "pre-commit>=3,<5",
   "build>=1,<2",
   "twine>=7,<8",
@@ -111,3 +112,21 @@ ignore = ["B008"]
 [tool.ruff.format]
 quote-style = "double"
 indent-style = "space"
+
+[tool.mypy]
+python_version = "3.11"
+files = ["src"]
+# The package ships a `py.typed` marker, so the public API is checked and
+# kept honest by CI. Tests are intentionally not type-checked: they use
+# pytest fixtures whose types are hard to express without extra plugins.
+check_untyped_defs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_unused_configs = true
+strict_equality = true
+# OpenCV, MediaPipe, Picamera2 and Adafruit ServoKit ship no type stubs; they
+# are treated as `Any` at the import boundary only.
+ignore_missing_imports = true

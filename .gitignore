@@ -224,7 +224,6 @@ __marimo__/
 # ---------------------------------------------------------------------------
 .env
 .env.*
-!.env.example
 
 # Downloaded models are deliberately not committed (pinned URLs + SHA-256)
 models/**/*.onnx

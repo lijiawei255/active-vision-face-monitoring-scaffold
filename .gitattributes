@@ -12,3 +12,6 @@
 *.onnx binary
 *.task binary
 *.tflite binary
+
+# Generated dependency locks; see docs/en/testing.md#dependency-locks
+requirements/lock-*.txt linguist-generated=true
