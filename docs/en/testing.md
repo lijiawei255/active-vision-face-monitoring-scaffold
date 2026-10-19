@@ -19,8 +19,8 @@
 pytest -m "not webcam and not hardware and not mediapipe" \
   --cov=avfm --cov-fail-under=80
 
-# Real model tests
-pytest -m "mediapipe or model"
+# Real model tests (MediaPipe also needs a working GL/EGL stack)
+pytest -m "mediapipe or model" --run-mediapipe
 
 # Local webcam
 pytest -m webcam --run-webcam

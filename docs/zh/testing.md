@@ -19,8 +19,8 @@
 pytest -m "not webcam and not hardware and not mediapipe" \
   --cov=avfm --cov-fail-under=80
 
-# 真实模型
-pytest -m "mediapipe or model"
+# 真实模型（MediaPipe 需要可用的 GL/EGL 栈）
+pytest -m "mediapipe or model" --run-mediapipe
 
 # 本机摄像头
 pytest -m webcam --run-webcam
