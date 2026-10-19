@@ -78,7 +78,7 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install -y libgl1 libglib2.0-0 libportaudio2
+          sudo apt-get install -y libgl1 libglib2.0-0 libportaudio2 libegl1 libgles2
       - name: Install locked dependencies
         run: |
           uv pip install --system -r requirements/lock-dev.txt
@@ -118,7 +118,7 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install -y libgl1 libglib2.0-0 libportaudio2
+          sudo apt-get install -y libgl1 libglib2.0-0 libportaudio2 libegl1 libgles2
       - name: Install locked dependencies with MediaPipe
         run: |
           uv pip install --system -r requirements/lock-dev-mediapipe.txt
@@ -126,7 +126,7 @@ jobs:
       - name: Download models
         run: avfm models download --all
       - name: Model tests
-        run: python -m pytest -m "mediapipe or model" --no-cov
+        run: python -m pytest -m "mediapipe or model" --run-mediapipe --no-cov
 
   package:
     name: package
