@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import dataclasses
 
+import pytest
+
 from avfm.config import FatigueConfig
 from avfm.events import EventBus, ListEventSink
 from avfm.fatigue.monitor import FatigueMonitor
@@ -112,6 +114,21 @@ def test_pose_gating_rejects_ear() -> None:
     assert snapshot.ear == 0.0
     assert not snapshot.eyes_closed
     assert snapshot.state == FatigueState.DISTRACTED
+
+
+def test_laptop_camera_pitch_is_not_distracted() -> None:
+    """A neutral downward gaze from a low webcam is not a distraction."""
+    config = dataclasses.replace(
+        FatigueConfig(),
+        distraction_pitch_deg=25.0,
+        ear_max_pitch_deg=25.0,
+    )
+    monitor = FatigueMonitor(config)
+    feed(monitor, 0.0, ear=0.25, pitch=17.0)
+    snapshot = feed(monitor, 0.6, ear=0.25, pitch=17.0)
+    assert snapshot.state == FatigueState.ALERT
+    assert snapshot.ear == pytest.approx(0.25)
+    assert not snapshot.looking_away
 
 
 def test_no_face_state() -> None:

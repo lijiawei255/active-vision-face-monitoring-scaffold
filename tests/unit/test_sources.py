@@ -11,7 +11,7 @@ from avfm.capture.factory import create_source
 from avfm.capture.opencv import OpenCVFrameSource
 from avfm.clock import FakeClock
 from avfm.config import CameraConfig
-from avfm.errors import ConfigError
+from avfm.errors import CameraError, ConfigError
 
 
 def test_apply_flip() -> None:
@@ -45,6 +45,51 @@ def test_image_source_and_end_of_stream(tmp_path: Path) -> None:
         assert source.read() is None
     finally:
         source.close()
+
+
+def test_video_source_uses_file_fps(tmp_path: Path) -> None:
+    path = tmp_path / "fps.avi"
+    writer = cv2.VideoWriter(str(path), cv2.VideoWriter_fourcc(*"MJPG"), 10.0, (64, 48))
+    assert writer.isOpened()
+    for _ in range(3):
+        writer.write(np.zeros((48, 64, 3), dtype=np.uint8))
+    writer.release()
+
+    # The requested runtime FPS must not overwrite the file's real timestamps.
+    source = OpenCVFrameSource("video", str(path), width=64, height=48, fps=30)
+    source.open()
+    try:
+        first = source.read()
+        second = source.read()
+    finally:
+        source.close()
+    assert first is not None and second is not None
+    assert second.timestamp == pytest.approx(0.1, abs=0.03)
+
+
+def test_open_failure_releases_capture(monkeypatch: pytest.MonkeyPatch) -> None:
+    class ClosedCapture:
+        def __init__(self, source) -> None:
+            self.released = False
+
+        def isOpened(self) -> bool:
+            return False
+
+        def release(self) -> None:
+            self.released = True
+
+    created: list[ClosedCapture] = []
+
+    def fake_capture(source):
+        cap = ClosedCapture(source)
+        created.append(cap)
+        return cap
+
+    monkeypatch.setattr(cv2, "VideoCapture", fake_capture)
+    source = OpenCVFrameSource("webcam", 0, width=64, height=48, fps=15)
+    with pytest.raises(CameraError):
+        source.open()
+    assert created and created[0].released
 
 
 def test_create_source_image(tmp_path: Path) -> None:

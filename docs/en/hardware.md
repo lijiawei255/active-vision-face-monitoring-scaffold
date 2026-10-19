@@ -33,6 +33,28 @@ implement the `Servo` protocol (see [porting.md](porting.md)).
 The parent hardware used these limits to avoid pulling the camera cable. Your mechanism may differ;
 change `[gimbal]` and `[tracker]` in the profile.
 
+## Parent hardware reference
+
+The parent project (`BJTU_Desktop-Learing-Assistant`) was actually run on a Pi 5. Its hardware
+configuration is the reference for this scaffold:
+
+| Item | Parent-tested value |
+|---|---|
+| Camera | OV5647 via Picamera2, RGB888, 640×480 @ 15 fps |
+| Camera orientation | physically inverted; vertical flip in software |
+| PCA9685 | I2C 0x40, 50 Hz, pulse 500–2500 µs, actuation range 180° |
+| Pan | CH2, 40–180°, default 90° |
+| Tilt | CH3, 0–140°, default 80° |
+| Servo driver | Adafruit ServoKit, all 16 channels configured once |
+
+The new scaffold matches these electrical and mechanical limits. It intentionally makes
+`set_angle()` non-blocking instead of the parent's motion-time `sleep`, and it adds explicit
+startup/failure handling. The new code is still contract-tested only; HIL results must be produced
+before calling the Pi backend verified.
+
+Do not infer the pulse range from the servo's marketing angle. Check the actual servo datasheet
+and keep the external 5V supply/ground wiring identical to the parent build.
+
 ## Camera mounting
 
 The reference camera is mounted upside-down, so `configs/rpi.toml` sets:

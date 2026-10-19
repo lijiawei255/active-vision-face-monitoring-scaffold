@@ -8,6 +8,12 @@ mode = "single"
 backend = "auto"
 interval_frames = 1
 
+[fatigue]
+# Laptop cameras are often below eye level; this profile tolerates a neutral
+# downward gaze. The generic default stays at 15/20 degrees.
+distraction_pitch_deg = 25.0
+ear_max_pitch_deg = 25.0
+
 [actuator]
 backend = "none"
 assume_camera_moves = false

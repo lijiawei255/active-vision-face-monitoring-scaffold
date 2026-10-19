@@ -37,6 +37,10 @@ class PCA9685Servo(Servo):
     ) -> None:
         if not 0 <= channel <= 15:
             raise ValueError("PCA9685 channel must be in [0, 15]")
+        if not angle_min < angle_max:
+            raise ValueError("angle_min must be smaller than angle_max")
+        if not 0 < min_pulse_us < max_pulse_us:
+            raise ValueError("pulse widths must satisfy 0 < min < max")
         self.name = name
         self.channel = channel
         self._angle_min = angle_min
@@ -78,6 +82,10 @@ class PCA9685Servo(Servo):
         self._kit = _KIT_CACHE[key]
         assert self._kit is not None
         self._servo = self._kit.servo[self.channel]
+        # Apply this channel's pulse range even when the shared kit was created
+        # by another servo with a different calibration.
+        self._servo.set_pulse_width_range(self._min_pulse_us, self._max_pulse_us)
+        self._servo.actuation_range = 180
         try:
             current = self._servo.angle
             if current is not None:

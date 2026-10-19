@@ -42,10 +42,11 @@ landmarks with `cv2.solvePnP` (SQPNP first, iterative fallback). A pose is valid
 reprojection error is below `max_reproj_error_px`.
 
 - Looking away: `|yaw| > distraction_yaw_deg` (20°) or `|pitch| > distraction_pitch_deg` (15°)
-  for `distraction_confirm_s` (2 s) → `DISTRACTED`.
+  for `distraction_confirm_s` (2 s) → `DISTRACTED`. The `desktop` profile raises the pitch
+  threshold to 25° because laptop cameras are often below eye level.
 - Pose-gated EAR: when `|yaw| > ear_max_yaw_deg` (25°) or `|pitch| > ear_max_pitch_deg` (20°),
   the EAR/PERCLOS sample is marked invalid. This avoids false "closed eyes" when the face is
-  turned away.
+  turned away. The `desktop` profile uses 25° for pitch as well.
 
 The camera intrinsic matrix is approximated from `camera.hfov_deg` (default 60°) with a square
 pixel assumption. For precise pose, calibrate the camera and provide `fx/fy/cx/cy`. The coarse

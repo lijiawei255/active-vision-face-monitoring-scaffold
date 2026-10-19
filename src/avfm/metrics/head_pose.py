@@ -18,16 +18,18 @@ MODEL_POINTS = np.array(
     [
         (0.0, 0.0, 0.0),  # nose tip
         (0.0, 63.6, -12.5),  # chin
-        (-34.0, -32.6, -24.2),  # left eye inner corner
-        (34.0, -32.6, -24.2),  # right eye inner corner
+        (-34.0, -32.6, -24.2),  # left outer eye corner
+        (34.0, -32.6, -24.2),  # right outer eye corner
         (-28.5, 28.0, -11.8),  # left mouth corner
         (28.5, 28.0, -11.8),  # right mouth corner
     ],
     dtype=np.float64,
 )
 
-# nose tip, chin, left eye inner, right eye inner, left mouth, right mouth
-HEAD_POSE_INDICES = (1, 152, 133, 362, 61, 291)
+# nose tip, chin, left outer eye, right outer eye, left mouth, right mouth.
+# These must be the OUTER eye corners; using the inner corners gives a
+# systematic ~50 degree yaw bias because the model's eye separation is wide.
+HEAD_POSE_INDICES = (1, 152, 33, 263, 61, 291)
 _MAX_POSE_INDEX = max(HEAD_POSE_INDICES)
 
 

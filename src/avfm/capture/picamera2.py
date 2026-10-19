@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import contextlib
 import logging
 
 import cv2
@@ -51,6 +52,7 @@ class Picamera2FrameSource(FrameSource):
                 "(or install the optional extra: pip install -e '.[rpi]')"
             ) from exc
 
+        camera = None
         try:
             camera = Picamera2()
             video_config = camera.create_video_configuration(
@@ -62,6 +64,11 @@ class Picamera2FrameSource(FrameSource):
             if self.warmup_s > 0:
                 self.clock.sleep(self.warmup_s)
         except Exception as exc:
+            if camera is not None:
+                with contextlib.suppress(Exception):
+                    camera.stop()
+                with contextlib.suppress(Exception):
+                    camera.close()
             raise CameraError(
                 "Could not start Picamera2. Check that the CSI camera is enabled "
                 "(libcamera-hello --list-cameras) and not used by another process."
@@ -74,7 +81,14 @@ class Picamera2FrameSource(FrameSource):
             raise CameraError("Picamera2 source is not open")
         try:
             rgb = self._camera.capture_array()
-            image = cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR)
+            if rgb.ndim != 3 or rgb.shape[2] != 3:
+                if rgb.ndim == 3 and rgb.shape[2] == 4:
+                    image = cv2.cvtColor(rgb, cv2.COLOR_RGBA2BGR)
+                else:
+                    logger.warning("Unexpected Picamera2 frame shape: %s", rgb.shape)
+                    return None
+            else:
+                image = cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR)
         except Exception as exc:
             logger.warning("Picamera2 capture failed: %s", exc)
             return None
@@ -90,11 +104,10 @@ class Picamera2FrameSource(FrameSource):
 
     def close(self) -> None:
         if self._camera is not None:
-            try:
+            with contextlib.suppress(Exception):
                 self._camera.stop()
+            with contextlib.suppress(Exception):
                 self._camera.close()
-            except Exception:  # pragma: no cover - hardware-specific cleanup
-                logger.exception("Picamera2 cleanup failed")
             self._camera = None
         self._opened = False
 

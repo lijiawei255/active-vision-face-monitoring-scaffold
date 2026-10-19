@@ -47,7 +47,26 @@ def main() -> int:
         str(output),
         "--json",
     ]
-    result = subprocess.run(command, capture_output=True, text=True, check=False)
+    try:
+        result = subprocess.run(
+            command,
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=max(30.0, args.duration + 20.0),
+        )
+    except subprocess.TimeoutExpired as exc:
+        payload = {
+            "kind": "rpi_bench",
+            "created_at": datetime.now(UTC).isoformat(),
+            "profile": args.profile,
+            "duration_s": args.duration,
+            "returncode": -1,
+            "report": {},
+            "stderr_tail": f"pipeline timed out: {exc}",
+        }
+        print(json.dumps(payload, indent=2, ensure_ascii=False))
+        return 1
     run_json = output / "run.json"
     report = {}
     if run_json.exists():

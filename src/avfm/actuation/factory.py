@@ -71,8 +71,15 @@ def _pca_pair(
         max_pulse_us=config.max_pulse_us,
     )
     # Probe I2C now, not at the first frame, so auto can fall back cleanly.
-    pan.initialize()
-    tilt.initialize()
+    try:
+        pan.initialize()
+        tilt.initialize()
+    except Exception:
+        # Do not leave a half-initialized pair behind; the caller may fall back
+        # to passive mode or report the original hardware error.
+        pan.close()
+        tilt.close()
+        raise
     return pan, tilt, ActuatorCapabilities(True, True, "pca9685", "")
 
 
@@ -118,6 +125,10 @@ def create_actuator(
         park_pan=park_angles[0] if park_angles else None,
         park_tilt=park_angles[1] if park_angles else None,
     )
+    # Match the parent project's startup behaviour: put a movable gimbal at a
+    # known default before the first frame, rather than waiting for PID output.
+    if park_angles is not None and actuator.can_move:
+        actuator.park()
     return ActuatorSelection(
         actuator=actuator,
         requested_backend=requested,

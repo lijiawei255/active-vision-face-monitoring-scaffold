@@ -1,0 +1,43 @@
+# Demo-only profile: 15-second webcam recording with shorter PERCLOS warm-up.
+#
+# This is NOT the production profile. The default (60 s window / 30 s warm-up)
+# is intentionally conservative; this file makes PERCLOS report ready inside a
+# 15-second demo so the viewer can see the complete pipeline.
+#
+# 15 s cue sheet (demo only):
+#   0.0-2.0   look at camera, natural blinks          -> ALERT
+#   2.0-4.0   slowly turn head 25-30 deg, hold        -> DISTRACTED
+#   4.0-5.5   return to camera, eyes open             -> ALERT
+#   5.5-7.3   deliberately close both eyes 1.8 s      -> DROWSY
+#   7.3-13.0  open eyes, look at camera, natural blinks -> recovery
+#   13.0-15.0 stay alert, slight smile/nod            -> ALERT
+[camera]
+source = "webcam:0"
+flip = "none"
+# Match the measured demo loop rate so the encoded 15 s file is really 15 s.
+fps = 12.7
+
+[runtime]
+fps = 12.7
+
+[detector]
+mode = "single"
+backend = "auto"
+interval_frames = 1
+
+[fatigue]
+perclos_window_s = 10.0
+perclos_warmup_s = 5.0
+perclos_min_coverage = 0.5
+perclos_max_gap_s = 0.5
+# Demo-only fast transitions; production defaults stay at 2.0 s / 2.0 s.
+distraction_confirm_s = 1.0
+recovery_s = 1.0
+event_cooldown_s = 1.0
+# Laptop camera geometry; the generic default is 15/20 degrees.
+distraction_pitch_deg = 25.0
+ear_max_pitch_deg = 25.0
+
+[actuator]
+backend = "none"
+assume_camera_moves = false

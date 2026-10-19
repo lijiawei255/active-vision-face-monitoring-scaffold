@@ -6,7 +6,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python 3.11](https://img.shields.io/badge/python-3.11-blue.svg)](pyproject.toml)
 
-> **Status: v0.1.0 alpha.** Desktop simulation, synthetic/real detector tests and a Windows
+> **Status: v0.1.1 alpha.** Desktop simulation, synthetic/real detector tests and a Windows
 > webcam passive run are verified locally. Raspberry Pi hardware (Picamera2 + PCA9685 + servos)
 > is implemented and contract-tested but **has not yet been executed on physical hardware** in
 > this repository. See [Verification matrix](#verification-matrix).
@@ -99,7 +99,7 @@ conda run -n avfm python -m pip install -e ".[dev,mediapipe]"
 
 conda run -n avfm avfm models download --all
 conda run -n avfm avfm selftest
-conda run -n avfm avfm run --source webcam:0 --servo none --show
+conda run -n avfm avfm run --source webcam:0 --profile desktop --servo none --show
 ```
 
 - `--show` opens a window with the face box, EAR/PERCLOS, state and desired pan/tilt.
@@ -198,7 +198,7 @@ The parent project used the same mounting.
 
 | Layer | Windows laptop | Raspberry Pi 5 |
 |---|---|---|
-| Unit / integration / SIL / cadence / CLI tests | ✅ 121 passed, 81% coverage (Python 3.11.17, OpenCV 5.0.0, MediaPipe 1.1.1) | ✅ pure Python; not run on Pi yet |
+| Unit / integration / SIL / cadence / CLI tests | ✅ 132 passed, 81% coverage (Python 3.11.17, OpenCV 5.0.0, MediaPipe 1.1.1) | ✅ pure Python; not run on Pi yet |
 | YuNet + MediaPipe on public-domain image | ✅ 1 face, 478 landmarks, EAR 0.308 | not run |
 | Windows webcam capture / passive loop | ✅ 58 frames in 5s, ~11.5 fps, avg loop ~15.9 ms; **no face was guaranteed in front of the camera during the automated run** | n/a |
 | Webcam real-face tracking | ⚠️ not controlled in this automated run; detector accuracy is covered by the image test | n/a |
@@ -247,7 +247,8 @@ Profiles live in [`configs/`](configs/):
 - `rpi.toml` — Picamera2 + PCA9685 + split detection;
 - `rpi_passive.toml` — Picamera2, no servos;
 - `rpi_low_power.toml` — lower resolution/FPS and slower cadence;
-- `rpi_tracking_only.toml` — YuNet only, no MediaPipe/fatigue.
+- `rpi_tracking_only.toml` — YuNet only, no MediaPipe/fatigue;
+- `demo_short.toml` — **demo-only** 10/15 s acceleration; never loaded by normal profiles.
 
 Use `--profile rpi`, `--config path.toml`, or CLI overrides such as
 `--detector-mode split --tracking-backend yunet --fatigue-backend mediapipe --servo none`.
