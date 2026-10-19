@@ -1,0 +1,29 @@
+name: Feature request
+description: Suggest a detector, actuator, metric or tooling improvement.
+title: "[feature] "
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem / use case
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives / prior art
+  - type: checkboxes
+    id: scope
+    attributes:
+      label: Scope
+      options:
+        - label: This keeps the hardware-agnostic scaffold boundary
+        - label: I can provide a contract or SIL test
+        - label: I can test on Raspberry Pi hardware
