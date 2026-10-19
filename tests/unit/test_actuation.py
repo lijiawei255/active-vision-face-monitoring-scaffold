@@ -106,6 +106,53 @@ def test_pca9685_contract(monkeypatch: pytest.MonkeyPatch) -> None:
     clear_kit_cache()
 
 
+def test_pca9685_reapplies_pulse_range_on_cached_kit(monkeypatch: pytest.MonkeyPatch) -> None:
+    class FakeServo:
+        def __init__(self) -> None:
+            self.angle = None
+            self.pulse = None
+            self.range = None
+
+        def set_pulse_width_range(self, low: int, high: int) -> None:
+            self.pulse = (low, high)
+
+    class FakeKit:
+        instances: list[FakeKit] = []
+
+        def __init__(self, channels: int, address: int) -> None:
+            self.frequency = None
+            self.servo = [FakeServo() for _ in range(16)]
+            FakeKit.instances.append(self)
+
+    fake_module = types.ModuleType("adafruit_servokit")
+    fake_module.ServoKit = FakeKit  # type: ignore[attr-defined]
+    monkeypatch.setitem(sys.modules, "adafruit_servokit", fake_module)
+    clear_kit_cache()
+    first = PCA9685Servo(
+        2,
+        angle_min=40,
+        angle_max=180,
+        address=0x40,
+        frequency=50,
+        min_pulse_us=500,
+        max_pulse_us=2500,
+    )
+    second = PCA9685Servo(
+        3,
+        angle_min=0,
+        angle_max=140,
+        address=0x40,
+        frequency=50,
+        min_pulse_us=600,
+        max_pulse_us=2400,
+    )
+    first.initialize()
+    second.initialize()
+    assert FakeKit.instances[0].servo[2].pulse == (500, 2500)
+    assert FakeKit.instances[0].servo[3].pulse == (600, 2400)
+    clear_kit_cache()
+
+
 def test_create_actuator_none_and_mock() -> None:
     config = AppConfig()
     none = create_actuator(config.actuator, config.gimbal)
@@ -115,6 +162,18 @@ def test_create_actuator_none_and_mock() -> None:
     mock = create_actuator(mock_config, config.gimbal)
     assert mock.actual_backend == "mock"
     assert mock.actuator.can_move
+
+
+def test_create_actuator_mock_parks_at_startup() -> None:
+    config = AppConfig()
+    mock_config = ActuatorConfig(backend="mock", assume_camera_moves=True)
+    selection = create_actuator(
+        mock_config,
+        config.gimbal,
+        park_angles=(90.0, 80.0),
+    )
+    assert selection.actuator.pan.get_angle() == 90.0
+    assert selection.actuator.tilt.get_angle() == 80.0
 
 
 def test_create_actuator_auto_fallback(monkeypatch: pytest.MonkeyPatch) -> None:

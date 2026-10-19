@@ -6,7 +6,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python 3.11](https://img.shields.io/badge/python-3.11-blue.svg)](pyproject.toml)
 
-> **状态：v0.1.0 alpha。** 桌面 SIL、合成/真实检测器测试和 Windows 摄像头 passive 实跑已在本地验证；
+> **状态：v0.1.1 alpha。** 桌面 SIL、合成/真实检测器测试和 Windows 摄像头 passive 实跑已在本地验证；
 > 树莓派硬件（Picamera2 + PCA9685 + 舵机）代码与契约测试已完成，但**尚未在本仓库中上真实硬件执行**。
 > 详见[验证矩阵](#验证矩阵)。
 
@@ -93,7 +93,7 @@ conda run -n avfm python -m pip install -e ".[dev,mediapipe]"
 
 conda run -n avfm avfm models download --all
 conda run -n avfm avfm selftest
-conda run -n avfm avfm run --source webcam:0 --servo none --show
+conda run -n avfm avfm run --source webcam:0 --profile desktop --servo none --show
 ```
 
 - `--show` 打开窗口，显示人脸框、EAR/PERCLOS、状态和期望 pan/tilt。
@@ -188,7 +188,7 @@ flowchart LR
 
 | 层级 | Windows 笔记本 | Raspberry Pi 5 |
 |---|---|---|
-| 单元/集成/SIL/cadence/CLI | ✅ 121 passed，81% 覆盖率（Python 3.11.17, OpenCV 5.0.0, MediaPipe 1.1.1） | ✅ 纯 Python；尚未在 Pi 上跑 |
+| 单元/集成/SIL/cadence/CLI | ✅ 132 passed，81% 覆盖率（Python 3.11.17, OpenCV 5.0.0, MediaPipe 1.1.1） | ✅ 纯 Python；尚未在 Pi 上跑 |
 | YuNet + MediaPipe 公有领域图 | ✅ 1 张脸、478 landmarks、EAR 0.308 | 未执行 |
 | Windows 摄像头采集 / passive 循环 | ✅ 5 秒 58 帧，约 11.5 fps，平均 loop 约 15.9 ms；**自动测试期间不保证镜头前有人脸** | n/a |
 | 摄像头真人脸跟踪 | ⚠️ 本次自动运行未受控；检测精度由测试图覆盖 | n/a |
@@ -235,7 +235,8 @@ passive/无舵机运行、SIL/回放和树莓派参考后端连起来。价值�
 - `rpi.toml` — Picamera2 + PCA9685 + split 检测；
 - `rpi_passive.toml` — Picamera2，无舵机；
 - `rpi_low_power.toml` — 更低分辨率/FPS 和更慢 cadence；
-- `rpi_tracking_only.toml` — 只跑 YuNet，不跑 MediaPipe/疲劳。
+- `rpi_tracking_only.toml` — 只跑 YuNet，不跑 MediaPipe/疲劳；
+- `demo_short.toml` — **仅演示用**的 10/15 秒加速配置；正常 profile 不会加载它。
 
 使用 `--profile rpi`、`--config path.toml`，或 CLI 覆盖，例如
 `--detector-mode split --tracking-backend yunet --fatigue-backend mediapipe --servo none`。

@@ -4,6 +4,36 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and versioning follows
 [Semantic Versioning](https://semver.org/).
 
+## [0.1.1] - 2026-10-20
+
+### Added
+
+- `configs/demo_short.toml` for the 10/15-second demonstration workflow; it is never loaded by
+  the normal profiles.
+- `--overlay-scale` for readable mobile/demo annotations.
+- Tests for video geometry/duration, camera cleanup, PCA9685 channel calibration, startup parking,
+  and demo-profile isolation.
+
+### Fixed
+
+- Head-pose landmark mapping now uses the outer eye corners (33/263), matching the 3D model;
+  the old inner-corner mapping produced a systematic ~50° yaw bias on real webcam input.
+- Demo-only thresholds are isolated in `configs/demo_short.toml`; generic defaults remain
+  60 s/30 s PERCLOS and 15°/20° pose thresholds. `configs/desktop.toml` carries the laptop-specific
+  25°/25° pitch tolerances.
+- Video writer is opened lazily from the first actual frame, so webcam/image/Picamera resolution
+  changes no longer crop or stretch the recording. Timestamped frames are duplicated/skipped to
+  preserve wall-clock duration.
+- OpenCV video sources read the file FPS before touching capture properties and release the
+  capture object on open failure.
+- Picamera2 closes a partially started camera on configuration/start failure and accepts RGBA
+  frames defensively.
+- PCA9685 applies per-channel pulse-width calibration even when the ServoKit is shared, validates
+  pulse/angle ranges, and cleans up a partially initialized pan/tilt pair. A movable gimbal is
+  parked at its default pose before the first frame.
+- Overlay labels now show actual camera FPS, `EAR --` for invalid samples, `EYES CLOSED`,
+  `DROWSY` cause, and `TARGET PAN/TILT`.
+
 ## [0.1.0] - 2026-10-19
 
 ### Added

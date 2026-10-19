@@ -38,7 +38,22 @@ def _run_pipeline(profile: str, servo: str, duration: float, output: Path) -> di
         str(output),
         "--json",
     ]
-    result = subprocess.run(command, capture_output=True, text=True, check=False)
+    try:
+        result = subprocess.run(
+            command,
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=max(30.0, duration + 20.0),
+        )
+    except subprocess.TimeoutExpired as exc:
+        return {
+            "command": command,
+            "returncode": -1,
+            "stdout": "",
+            "stderr": f"pipeline timed out: {exc}",
+            "report": {},
+        }
     report = {}
     run_json = output / "run.json"
     if run_json.exists():
@@ -89,6 +104,7 @@ def main() -> int:
         if not args.yes and input("Move servos for a small sweep? [y/N] ").strip().lower() != "y":
             report["servo_sweep"] = {"skipped": True}
         else:
+            pan = tilt = None
             try:
                 from avfm.actuation.pca9685 import PCA9685Servo
 
@@ -97,12 +113,20 @@ def main() -> int:
                     angle_min=config.gimbal.pan_min,
                     angle_max=config.gimbal.pan_max,
                     name="pan",
+                    address=config.actuator.pca9685_address,
+                    frequency=config.actuator.pca9685_frequency,
+                    min_pulse_us=config.actuator.min_pulse_us,
+                    max_pulse_us=config.actuator.max_pulse_us,
                 )
                 tilt = PCA9685Servo(
                     config.actuator.tilt_channel,
                     angle_min=config.gimbal.tilt_min,
                     angle_max=config.gimbal.tilt_max,
                     name="tilt",
+                    address=config.actuator.pca9685_address,
+                    frequency=config.actuator.pca9685_frequency,
+                    min_pulse_us=config.actuator.min_pulse_us,
+                    max_pulse_us=config.actuator.max_pulse_us,
                 )
                 pan.initialize()
                 tilt.initialize()
@@ -119,11 +143,14 @@ def main() -> int:
                     config.tracker.default_tilt,
                 ):
                     tilt.set_angle(angle)
-                pan.close()
-                tilt.close()
                 report["servo_sweep"] = {"ok": True}
             except Exception as exc:
                 report["servo_sweep"] = {"ok": False, "error": str(exc)}
+            finally:
+                if pan is not None:
+                    pan.close()
+                if tilt is not None:
+                    tilt.close()
     else:
         report["servo_sweep"] = {"skipped": True, "reason": "--no-servo"}
 

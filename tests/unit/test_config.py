@@ -53,6 +53,31 @@ def test_config_roundtrip_dict() -> None:
     assert data["tracker"]["pan_pid"]["kp"] == 120.0
 
 
+def test_demo_profile_does_not_change_normal_profiles(tmp_path: Path) -> None:
+    """Demo acceleration must stay in demo_short.toml, not the defaults."""
+    code_defaults = load_config(cwd=tmp_path)
+    desktop = load_config(profile="desktop", cwd=REPO_ROOT)
+    demo = load_config(profile="demo_short", cwd=REPO_ROOT)
+
+    assert code_defaults.fatigue.perclos_window_s == 60.0
+    assert code_defaults.fatigue.perclos_warmup_s == 30.0
+    assert code_defaults.fatigue.distraction_confirm_s == 2.0
+    assert code_defaults.fatigue.distraction_pitch_deg == 15.0
+    assert code_defaults.fatigue.ear_max_pitch_deg == 20.0
+
+    assert desktop.fatigue.perclos_window_s == 60.0
+    assert desktop.fatigue.perclos_warmup_s == 30.0
+    assert desktop.fatigue.distraction_confirm_s == 2.0
+    assert desktop.fatigue.recovery_s == 2.0
+    assert desktop.fatigue.distraction_pitch_deg == 25.0
+
+    assert demo.fatigue.perclos_window_s == 10.0
+    assert demo.fatigue.perclos_warmup_s == 5.0
+    assert demo.fatigue.distraction_confirm_s == 1.0
+    assert demo.fatigue.recovery_s == 1.0
+    assert demo.camera.fps == 12.7
+
+
 def test_replace_validates_cross_fields() -> None:
     config = AppConfig()
     with pytest.raises(ConfigError):

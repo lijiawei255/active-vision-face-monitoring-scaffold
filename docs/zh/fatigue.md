@@ -39,9 +39,10 @@ EAR = (|p1-p5| + |p2-p4|) / (2 * |p0-p3|)
 才算有效姿态。
 
 - 转头：`|yaw| > distraction_yaw_deg`（20°）或 `|pitch| > distraction_pitch_deg`（15°）
-  持续 `distraction_confirm_s`（2 s）→ `DISTRACTED`。
+  持续 `distraction_confirm_s`（2 s）→ `DISTRACTED`。`desktop` profile 把俯仰阈值放宽到 25°，
+  因为笔记本摄像头通常在眼睛下方。
 - 姿态门控 EAR：`|yaw| > ear_max_yaw_deg`（25°）或 `|pitch| > ear_max_pitch_deg`（20°）时，
-  该帧 EAR/PERCLOS 样本记为 invalid，避免转头被误判为闭眼。
+  该帧 EAR/PERCLOS 样本记为 invalid，避免转头被误判为闭眼。`desktop` profile 的俯仰门控同样用 25°。
 
 相机内参由 `camera.hfov_deg`（默认 60°）和方形像素假设近似。需要精确姿态时做相机标定并
 提供 `fx/fy/cx/cy`。上面的阈值故意做得比较宽容。

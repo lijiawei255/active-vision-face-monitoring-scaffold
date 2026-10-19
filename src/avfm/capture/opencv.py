@@ -66,19 +66,23 @@ class OpenCVFrameSource(FrameSource):
 
         cap = cv2.VideoCapture(path)
         if not cap.isOpened():
+            cap.release()
             raise CameraError(
                 f"Could not open {self.kind} source {self.target!r}. "
                 "On Windows, check that the camera is not used by another app."
             )
-        cap.set(cv2.CAP_PROP_FRAME_WIDTH, float(self.width))
-        cap.set(cv2.CAP_PROP_FRAME_HEIGHT, float(self.height))
-        cap.set(cv2.CAP_PROP_FPS, float(self.fps))
-        # Keep only the latest frame in the driver queue.
-        cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
         if self.kind == "video":
+            # Read the file rate before touching properties; setting FPS/size on
+            # a video capture can change or hide the real timing metadata.
             file_fps = cap.get(cv2.CAP_PROP_FPS)
             if file_fps and file_fps > 0:
                 self._file_fps = float(file_fps)
+        else:
+            cap.set(cv2.CAP_PROP_FRAME_WIDTH, float(self.width))
+            cap.set(cv2.CAP_PROP_FRAME_HEIGHT, float(self.height))
+            cap.set(cv2.CAP_PROP_FPS, float(self.fps))
+            # Keep only the latest frame in the driver queue.
+            cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
         self._cap = cap
         self._opened = True
 
