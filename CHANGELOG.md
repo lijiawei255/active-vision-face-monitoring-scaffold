@@ -12,14 +12,16 @@ All notable changes to this project are documented here. The format follows
   shipped `py.typed` marker is now an enforced contract rather than a claim.
 - Locked, hashed dependency files under `requirements/` (`lock-core.txt`, `lock-dev.txt`,
   `lock-dev-mediapipe.txt`) generated with uv. CI installs from them and fails if they drift.
-- Configuration-validation and CLI branch tests; core coverage rose from 81% to 89%.
+- Configuration-validation and CLI branch tests; core coverage rose from 81% to 88%.
+- The MediaPipe job now runs the real MediaPipe model tests (`--run-mediapipe`) on headless
+  Linux with the EGL/GLES libraries installed.
 
 ### Changed
 
 - CI installs dependencies with uv from the lock files instead of resolving ranges with pip on
   every run.
 - The package job installs the built wheel against the locked runtime dependencies.
-- README/docs report the current test count and coverage (236 passed, 89%).
+- README/docs report the current test count and coverage (240 passed, 88%).
 
 ### Fixed
 

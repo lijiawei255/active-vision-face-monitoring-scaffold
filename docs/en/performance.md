@@ -55,7 +55,7 @@ The first frame includes model initialization and is not representative; use
 | Item | Result |
 |---|---|
 | Python / OpenCV / MediaPipe | 3.11.17 / 5.0.0 / 1.1.1 |
-| Core tests | 236 passed; 89% coverage |
+| Core tests | 240 passed; 88% coverage |
 | YuNet on `tests/data/astronaut.jpg` | 1 face, score 0.932 |
 | MediaPipe on same image | 1 face, 478 landmarks, EAR 0.308, yaw 34.2°, pitch 5.6°, roll 11.7° |
 | Webcam passive run (5 s) | 58 frames, ~11.5 fps, avg loop ~15.9 ms |

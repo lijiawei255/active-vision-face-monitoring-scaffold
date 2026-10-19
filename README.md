@@ -198,7 +198,7 @@ The parent project used the same mounting.
 
 | Layer | Windows laptop | Raspberry Pi 5 |
 |---|---|---|
-| Unit / integration / SIL / cadence / CLI tests | ✅ 236 passed, 89% coverage (Python 3.11.17, OpenCV 5.0.0, MediaPipe 1.1.1) | ✅ pure Python; not run on Pi yet |
+| Unit / integration / SIL / cadence / CLI tests | ✅ 240 passed, 88% coverage (Python 3.11.17, OpenCV 5.0.0, MediaPipe 1.1.1) | ✅ pure Python; not run on Pi yet |
 | YuNet + MediaPipe on public-domain image | ✅ 1 face, 478 landmarks, EAR 0.308 | not run |
 | Windows webcam capture / passive loop | ✅ 58 frames in 5s, ~11.5 fps, avg loop ~15.9 ms; **no face was guaranteed in front of the camera during the automated run** | n/a |
 | Webcam real-face tracking | ⚠️ not controlled in this automated run; detector accuracy is covered by the image test | n/a |
