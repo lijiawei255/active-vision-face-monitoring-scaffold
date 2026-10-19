@@ -1,0 +1,21 @@
+# Raspberry Pi 5 low-power profile for heat/throttling or heavy scenes.
+[camera]
+source = "picamera"
+flip = "vertical"
+width = 480
+height = 360
+fps = 10.0
+
+[runtime]
+fps = 10.0
+
+[detector]
+mode = "split"
+tracking_backend = "yunet"
+fatigue_backend = "mediapipe"
+tracking_interval_frames = 2
+fatigue_interval_frames = 3
+
+[actuator]
+backend = "auto"
+assume_camera_moves = true

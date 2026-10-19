@@ -1,0 +1,24 @@
+# Raspberry Pi 5 + OV5647 + optional PCA9685 profile.
+# The camera is mounted upside-down in the reference build, hence flip="vertical".
+[camera]
+source = "picamera"
+flip = "vertical"
+width = 640
+height = 480
+fps = 15.0
+
+[runtime]
+fps = 15.0
+
+[detector]
+# Split cadence mirrors the parent project: fast tracking detector every frame,
+# heavier MediaPipe landmark detector every 2 frames (7.5 Hz).
+mode = "split"
+tracking_backend = "yunet"
+fatigue_backend = "mediapipe"
+tracking_interval_frames = 1
+fatigue_interval_frames = 2
+
+[actuator]
+backend = "auto"
+assume_camera_moves = true

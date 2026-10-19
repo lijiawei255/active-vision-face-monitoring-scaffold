@@ -1,0 +1,22 @@
+# Raspberry Pi 5 + camera but no servos: passive tracking + fatigue only.
+# The camera does not move; desired pan/tilt angles are still computed and logged.
+[camera]
+source = "picamera"
+flip = "vertical"
+width = 640
+height = 480
+fps = 15.0
+
+[runtime]
+fps = 15.0
+
+[detector]
+mode = "split"
+tracking_backend = "yunet"
+fatigue_backend = "mediapipe"
+tracking_interval_frames = 1
+fatigue_interval_frames = 2
+
+[actuator]
+backend = "none"
+assume_camera_moves = false

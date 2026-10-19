@@ -1,0 +1,21 @@
+cff-version: 1.2.0
+message: "If you use this software in academic work, please cite it using this metadata."
+title: "Active Vision Face Monitoring Scaffold"
+abstract: "A hardware-agnostic, testable engineering scaffold for 2-DOF PID gimbal face tracking and real-time fatigue monitoring (EAR, PERCLOS, head pose), with passive/no-servo mode, SIL, replay, and a Raspberry Pi reference backend."
+authors:
+  - family-names: Li
+    given-names: Jiawei
+version: 0.1.0
+date-released: "2026-10-19"
+license: MIT
+repository-code: "https://github.com/lijiawei255/active-vision-face-monitoring-scaffold"
+keywords:
+  - active vision
+  - face tracking
+  - fatigue detection
+  - PERCLOS
+  - PID
+  - pan-tilt
+  - Raspberry Pi
+  - OpenCV
+  - MediaPipe

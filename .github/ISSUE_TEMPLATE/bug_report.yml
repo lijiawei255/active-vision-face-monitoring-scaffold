@@ -1,0 +1,56 @@
+name: Bug report
+description: Report a reproducible runtime, detector, control or documentation problem.
+title: "[bug] "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Privacy warning:** do not attach face photos, videos, API keys or personal data.
+        Use synthetic images or the public-domain test fixture if needed.
+  - type: input
+    id: version
+    attributes:
+      label: avfm version / commit
+      placeholder: "v0.1.0 or commit hash"
+    validations:
+      required: true
+  - type: dropdown
+    id: os
+    attributes:
+      label: OS
+      options: [Windows, Linux, Raspberry Pi OS, macOS, Other]
+    validations:
+      required: true
+  - type: dropdown
+    id: mode
+    attributes:
+      label: Mode
+      options: [passive, active (PCA9685), desktop mock, SIL, replay, tests only]
+    validations:
+      required: true
+  - type: textarea
+    id: command
+    attributes:
+      label: Command / configuration
+      description: Paste the command and the relevant config (remove secrets).
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behaviour
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behaviour and logs
+      description: Paste `run.json`/log excerpts; remove personal data.
+    validations:
+      required: true
+  - type: input
+    id: check
+    attributes:
+      label: Doctor output
+      description: Paste `avfm doctor --json` (no secrets).

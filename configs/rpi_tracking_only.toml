@@ -1,0 +1,23 @@
+# Tracking-only profile: YuNet every frame, no MediaPipe, no fatigue.
+# Useful when MediaPipe cannot be installed or CPU temperature is a concern.
+[camera]
+source = "picamera"
+flip = "vertical"
+width = 640
+height = 480
+fps = 15.0
+
+[runtime]
+fps = 15.0
+
+[detector]
+mode = "single"
+backend = "yunet"
+interval_frames = 1
+
+[fatigue]
+enabled = false
+
+[actuator]
+backend = "auto"
+assume_camera_moves = true

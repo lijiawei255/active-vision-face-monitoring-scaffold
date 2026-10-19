@@ -1,0 +1,16 @@
+# Anaconda environment for active-vision-face-monitoring-scaffold.
+#
+# The environment deliberately uses conda-forge only (not Anaconda's
+# "defaults" channel) so the file is safe to share and reuse.
+#
+#   conda env create -f environment.yml
+#   conda run -n avfm python -m pip install -e ".[dev,mediapipe]"
+#
+# On a Raspberry Pi, use the same environment and add the optional rpi extra:
+#   conda run -n avfm python -m pip install -e ".[dev,mediapipe,rpi]"
+name: avfm
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pip

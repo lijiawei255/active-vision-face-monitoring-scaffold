@@ -1,0 +1,13 @@
+# Windows / desktop laptop profile: webcam + passive mode (no actuator).
+[camera]
+source = "webcam:0"
+flip = "none"
+
+[detector]
+mode = "single"
+backend = "auto"
+interval_frames = 1
+
+[actuator]
+backend = "none"
+assume_camera_moves = false

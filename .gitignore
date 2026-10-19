@@ -218,3 +218,32 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# ---------------------------------------------------------------------------
+# avfm project runtime and secrets
+# ---------------------------------------------------------------------------
+.env
+.env.*
+!.env.example
+
+# Downloaded models are deliberately not committed (pinned URLs + SHA-256)
+models/**/*.onnx
+models/**/*.task
+models/**/*.tflite
+models/**/*.pt
+models/*.onnx
+models/*.task
+models/*.tflite
+models/*.pt
+
+# Run artifacts: sessions, calibration, reports, annotated video
+var/
+demo/
+*.jsonl
+*.mp4
+*.avi
+
+# Local calibration / run state
+*.part
+run.json
+ear_calibration.json
