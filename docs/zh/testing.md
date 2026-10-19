@@ -31,6 +31,40 @@ pytest -m hardware --run-hardware
 
 标记在 `pyproject.toml` 注册：`model`、`mediapipe`、`webcam`、`hardware`、`slow`。
 
+## 静态检查
+
+仓库自带 `py.typed`，因此 `src/` 的类型检查是承诺而不是装饰：CI 与 pre-commit 都会执行。
+
+```bash
+ruff check src tests
+ruff format --check src tests
+mypy          # 仅 src；配置在 pyproject.toml
+```
+
+## 依赖锁文件
+
+CI 不再现场解析版本范围，而是从 `requirements/` 安装精确且带哈希的版本。
+
+| 文件 | 用途 |
+|---|---|
+| `lock-core.txt` | 仅运行时依赖（wheel 冒烟测试） |
+| `lock-dev.txt` | lint、核心测试、文档检查 |
+| `lock-dev-mediapipe.txt` | MediaPipe/模型测试 |
+
+依赖变化后重新生成三份锁文件；lint job 会在它们漂移时失败。
+
+```bash
+uv pip compile pyproject.toml --universal --python-version 3.11 \
+  --generate-hashes -o requirements/lock-core.txt
+uv pip compile pyproject.toml --extra dev --universal --python-version 3.11 \
+  --generate-hashes -o requirements/lock-dev.txt
+uv pip compile pyproject.toml --extra dev --extra mediapipe --universal \
+  --python-version 3.11 --generate-hashes -o requirements/lock-dev-mediapipe.txt
+```
+
+`rpi` extra 依赖仅限 Linux 的 `picamera2`，因此在 Pi 上用 `pip install -e ".[rpi]"` 安装，
+不进入通用锁文件。
+
 ## SIL 场景
 
 `avfm simulate` 和 `scripts/rpi_bench.py` 使用一阶 pan/tilt plant 和投影人脸位置。

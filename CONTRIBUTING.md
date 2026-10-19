@@ -19,10 +19,14 @@ Windows: `scripts/bootstrap.ps1`. Linux: `scripts/bootstrap.sh`.
 ```bash
 conda run -n avfm ruff check src tests
 conda run -n avfm ruff format --check src tests
+conda run -n avfm python -m mypy
 conda run -n avfm python -m pytest -m "not webcam and not hardware and not mediapipe" \
   --cov=avfm --cov-fail-under=80
 conda run -n avfm python scripts/check_docs_parity.py
 ```
+
+If you change dependencies, regenerate the locked files under `requirements/` with the commands
+in [docs/en/testing.md](docs/en/testing.md#dependency-locks) — CI fails when they are stale.
 
 ## Rules
 

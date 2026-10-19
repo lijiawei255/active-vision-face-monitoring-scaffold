@@ -32,6 +32,40 @@ pytest -m hardware --run-hardware
 Markers are registered in `pyproject.toml`:
 `model`, `mediapipe`, `webcam`, `hardware`, `slow`.
 
+## Static checks
+
+The shipped `py.typed` marker is a contract: `src/` is type-checked in CI and pre-commit.
+
+```bash
+ruff check src tests
+ruff format --check src tests
+mypy          # src only; configuration lives in pyproject.toml
+```
+
+## Dependency locks
+
+CI installs exact, hashed versions from `requirements/` instead of resolving ranges at build time.
+
+| File | Used by |
+|---|---|
+| `lock-core.txt` | runtime dependencies only (wheel smoke test) |
+| `lock-dev.txt` | lint, core tests, docs checks |
+| `lock-dev-mediapipe.txt` | MediaPipe/model tests |
+
+Regenerate all three after changing dependencies; the lint job fails if they drift.
+
+```bash
+uv pip compile pyproject.toml --universal --python-version 3.11 \
+  --generate-hashes -o requirements/lock-core.txt
+uv pip compile pyproject.toml --extra dev --universal --python-version 3.11 \
+  --generate-hashes -o requirements/lock-dev.txt
+uv pip compile pyproject.toml --extra dev --extra mediapipe --universal \
+  --python-version 3.11 --generate-hashes -o requirements/lock-dev-mediapipe.txt
+```
+
+The `rpi` extra depends on Linux-only `picamera2`, so it is installed on the Pi with
+`pip install -e ".[rpi]"` and is not part of the universal lock.
+
 ## SIL scenarios
 
 `avfm simulate` and `scripts/rpi_bench.py` use a first-order pan/tilt plant and a projected face

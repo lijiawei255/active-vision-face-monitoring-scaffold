@@ -50,7 +50,7 @@
 - **运行时**：单线程循环、latest-frame、过期帧丢弃、JSONL 会话记录、带标注视频（显式开启）、
   含性能指标的 run manifest。
 - **工具链**：`avfm run / simulate / replay / detect / calibrate / doctor / selftest / models`、
-  `pytest`、`ruff`、GitHub Actions、pre-commit、双语文档。
+  `pytest`、`ruff`、`mypy`、GitHub Actions、pre-commit、双语文档。
 
 ---
 
@@ -188,7 +188,7 @@ flowchart LR
 
 | 层级 | Windows 笔记本 | Raspberry Pi 5 |
 |---|---|---|
-| 单元/集成/SIL/cadence/CLI | ✅ 133 passed，81% 覆盖率（Python 3.11.17, OpenCV 5.0.0, MediaPipe 1.1.1） | ✅ 纯 Python；尚未在 Pi 上跑 |
+| 单元/集成/SIL/cadence/CLI | ✅ 236 passed，89% 覆盖率（Python 3.11.17, OpenCV 5.0.0, MediaPipe 1.1.1） | ✅ 纯 Python；尚未在 Pi 上跑 |
 | YuNet + MediaPipe 公有领域图 | ✅ 1 张脸、478 landmarks、EAR 0.308 | 未执行 |
 | Windows 摄像头采集 / passive 循环 | ✅ 5 秒 58 帧，约 11.5 fps，平均 loop 约 15.9 ms；**自动测试期间不保证镜头前有人脸** | n/a |
 | 摄像头真人脸跟踪 | ⚠️ 本次自动运行未受控；检测精度由测试图覆盖 | n/a |
@@ -260,6 +260,17 @@ conda run -n avfm python -m pytest -m webcam --run-webcam
 # 树莓派硬件（有硬件时显式开启）
 conda run -n avfm python -m pytest -m hardware --run-hardware
 ```
+
+静态检查（CI 与 pre-commit 同样会执行）：
+
+```bash
+conda run -n avfm python -m ruff check src tests
+conda run -n avfm python -m ruff format --check src tests
+conda run -n avfm python -m mypy
+```
+
+CI 从 [`requirements/`](requirements/) 安装精确且带哈希的版本；依赖变化后用 `uv pip compile`
+重新生成锁文件，步骤见 [docs/zh/testing.md](docs/zh/testing.md#依赖锁文件)。
 
 `tests/data/astronaut.jpg` 是 scikit-image `astronaut` 样本（NASA Great Images，公有领域，
 Eileen Collins）的缩放派生图，仅作为检测器测试夹具；见 [tests/data/README.md](tests/data/README.md)。

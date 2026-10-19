@@ -4,6 +4,33 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and versioning follows
 [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Added
+
+- `mypy` type checking for `src/avfm`, wired into CI, pre-commit and the `dev` extra. The
+  shipped `py.typed` marker is now an enforced contract rather than a claim.
+- Locked, hashed dependency files under `requirements/` (`lock-core.txt`, `lock-dev.txt`,
+  `lock-dev-mediapipe.txt`) generated with uv. CI installs from them and fails if they drift.
+- Configuration-validation and CLI branch tests; core coverage rose from 81% to 89%.
+
+### Changed
+
+- CI installs dependencies with uv from the lock files instead of resolving ranges with pip on
+  every run.
+- The package job installs the built wheel against the locked runtime dependencies.
+- README/docs report the current test count and coverage (236 passed, 89%).
+
+### Fixed
+
+- `avfm models download` sends the real package version in its `User-Agent` header instead of a
+  hard-coded `avfm/0.1`.
+- Removed unnecessary `# type: ignore` comments in the fatigue monitor and head pose; the EAR and
+  pose guards now narrow `FaceMetrics | None` explicitly. The two remaining ignores (dynamic
+  handler attributes in `logging.py`) are documented and verified necessary by `warn_unused_ignores`.
+- Removed a fragile `assert` at the end of the model download retry loop.
+- Removed the stale `!.env.example` exception from `.gitignore` (no such file is shipped).
+
 ## [0.1.2] - 2026-10-20
 
 ### Changed

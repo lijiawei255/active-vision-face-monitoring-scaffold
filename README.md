@@ -54,7 +54,7 @@ certified driver-monitoring device.
 - **Runtime**: single-threaded loop, latest-frame handling, stale-frame drop, JSONL session
   recording, annotated video (opt-in), run manifest with performance metrics.
 - **Tooling**: `avfm run / simulate / replay / detect / calibrate / doctor / selftest / models`,
-  `pytest` suite, `ruff`, GitHub Actions, pre-commit, bilingual docs.
+  `pytest` suite, `ruff`, `mypy`, GitHub Actions, pre-commit, bilingual docs.
 
 ---
 
@@ -198,7 +198,7 @@ The parent project used the same mounting.
 
 | Layer | Windows laptop | Raspberry Pi 5 |
 |---|---|---|
-| Unit / integration / SIL / cadence / CLI tests | ✅ 133 passed, 81% coverage (Python 3.11.17, OpenCV 5.0.0, MediaPipe 1.1.1) | ✅ pure Python; not run on Pi yet |
+| Unit / integration / SIL / cadence / CLI tests | ✅ 236 passed, 89% coverage (Python 3.11.17, OpenCV 5.0.0, MediaPipe 1.1.1) | ✅ pure Python; not run on Pi yet |
 | YuNet + MediaPipe on public-domain image | ✅ 1 face, 478 landmarks, EAR 0.308 | not run |
 | Windows webcam capture / passive loop | ✅ 58 frames in 5s, ~11.5 fps, avg loop ~15.9 ms; **no face was guaranteed in front of the camera during the automated run** | n/a |
 | Webcam real-face tracking | ⚠️ not controlled in this automated run; detector accuracy is covered by the image test | n/a |
@@ -272,6 +272,17 @@ conda run -n avfm python -m pytest -m webcam --run-webcam
 # Raspberry Pi hardware (opt-in, when available)
 conda run -n avfm python -m pytest -m hardware --run-hardware
 ```
+
+Static checks (also enforced by CI and pre-commit):
+
+```bash
+conda run -n avfm python -m ruff check src tests
+conda run -n avfm python -m ruff format --check src tests
+conda run -n avfm python -m mypy
+```
+
+CI installs exact, hashed versions from [`requirements/`](requirements/); regenerate the locks
+with `uv pip compile` as described in [docs/en/testing.md](docs/en/testing.md#dependency-locks).
 
 `tests/data/astronaut.jpg` is a resized derivative of the scikit-image `astronaut` sample
 (NASA Great Images, public domain, Eileen Collins). It is used only as a detector fixture;

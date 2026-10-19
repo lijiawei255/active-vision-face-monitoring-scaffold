@@ -52,7 +52,7 @@ fatigue_interval_frames = 2
 | 项目 | 结果 |
 |---|---|
 | Python / OpenCV / MediaPipe | 3.11.17 / 5.0.0 / 1.1.1 |
-| 核心测试 | 133 passed；81% 覆盖率 |
+| 核心测试 | 236 passed；89% 覆盖率 |
 | YuNet on `tests/data/astronaut.jpg` | 1 张脸，score 0.932 |
 | MediaPipe 同图 | 1 张脸，478 landmarks，EAR 0.308，yaw 34.2°，pitch 5.6°，roll 11.7° |
 | 摄像头 passive 5 s | 58 帧，约 11.5 fps，平均 loop 约 15.9 ms |
