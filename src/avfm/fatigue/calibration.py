@@ -52,7 +52,7 @@ class EarCalibration:
             ceiling=ceiling,
             created_at=time.time(),
             source=source,
-            frame_size=tuple(frame_size),
+            frame_size=frame_size,
             model=model,
         )
 
@@ -81,7 +81,7 @@ class EarCalibration:
             ceiling=float(data.get("ceiling", 0.25)),
             created_at=float(data.get("created_at", 0.0)),
             source=str(data.get("source", "")),
-            frame_size=tuple(data.get("frame_size", (0, 0))),  # type: ignore[arg-type]
+            frame_size=tuple(data.get("frame_size", (0, 0))),
             model=str(data.get("model", "mediapipe")),
         )
 

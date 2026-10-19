@@ -14,6 +14,7 @@ import urllib.request
 from dataclasses import dataclass
 from pathlib import Path
 
+from avfm import __version__
 from avfm.errors import ModelNotFoundError, ModelVerificationError
 
 
@@ -126,7 +127,7 @@ def verify_model_or_raise(spec: ModelSpec, path: Path) -> None:
 
 
 def _download_once(spec: ModelSpec, dest: Path, timeout: float) -> None:
-    request = urllib.request.Request(spec.url, headers={"User-Agent": "avfm/0.1"})
+    request = urllib.request.Request(spec.url, headers={"User-Agent": f"avfm/{__version__}"})
     part = dest.with_name(dest.name + ".part")
     part.parent.mkdir(parents=True, exist_ok=True)
     if part.exists():
@@ -183,7 +184,7 @@ def download_model(
         raise ModelVerificationError(
             f"Model exists at {target} but failed verification. Run with --force to re-download."
         )
-    last_error: Exception | None = None
+    last_error: Exception = ModelVerificationError(f"Could not download {spec.name}")
     for attempt in range(1, max(1, retries) + 1):
         try:
             _download_once(spec, target, timeout)
@@ -194,7 +195,6 @@ def download_model(
                 break
             if attempt < max(1, retries):
                 time.sleep(0.5)
-    assert last_error is not None
     raise last_error
 
 

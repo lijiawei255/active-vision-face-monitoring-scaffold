@@ -69,16 +69,16 @@ class FatigueMonitor:
             self._blink_times.popleft()
         return float(len(self._blink_times))
 
-    def _ear_gated(self, metrics: FaceMetrics) -> bool:
-        if not metrics.valid_pose:
+    def _ear_gated(self, metrics: FaceMetrics | None) -> bool:
+        if metrics is None or not metrics.valid_pose:
             return False
         return (
             abs(metrics.yaw) > self.config.ear_max_yaw_deg
             or abs(metrics.pitch) > self.config.ear_max_pitch_deg
         )
 
-    def _pose_looking_away(self, metrics: FaceMetrics) -> bool:
-        if not metrics.valid_pose:
+    def _pose_looking_away(self, metrics: FaceMetrics | None) -> bool:
+        if metrics is None or not metrics.valid_pose:
             return False
         return (
             abs(metrics.yaw) > self.config.distraction_yaw_deg
@@ -98,7 +98,7 @@ class FatigueMonitor:
             return FatigueSnapshot(
                 state=FatigueState.UNAVAILABLE,
                 reason="fatigue detector unavailable or disabled",
-                timestamp=timestamp,  # type: ignore[call-arg]
+                timestamp=timestamp,
             )
 
         fresh = (
@@ -108,12 +108,12 @@ class FatigueMonitor:
         )
         if metrics is not None and metrics.valid_landmarks:
             self._last_metrics_ts = metrics.timestamp
-        ear_usable = fresh and not self._ear_gated(metrics)  # type: ignore[arg-type]
+        ear_usable = fresh and not self._ear_gated(metrics)
 
         # PERCLOS sampling only happens when the fatigue detector actually ran.
         if detection_ran:
-            if ear_usable:
-                closed = metrics.ear < self.ear_threshold  # type: ignore[union-attr]
+            if ear_usable and metrics is not None:
+                closed = metrics.ear < self.ear_threshold
                 self._perclos.add(timestamp, closed=closed, valid=True)
             else:
                 self._perclos.add(timestamp, closed=False, valid=False)
@@ -125,8 +125,8 @@ class FatigueMonitor:
             self._last_face_ts = timestamp
 
         # Closure / blink / microsleep bookkeeping.
-        if ear_usable:
-            closed = metrics.ear < self.ear_threshold  # type: ignore[union-attr]
+        if ear_usable and metrics is not None:
+            closed = metrics.ear < self.ear_threshold
             if closed:
                 if self._closed_since is None:
                     self._closed_since = timestamp
@@ -178,7 +178,7 @@ class FatigueMonitor:
 
         # Distraction condition (only when pose is valid).
         looking_away = self._pose_looking_away(metrics) if fresh else False
-        if looking_away:
+        if looking_away and metrics is not None:
             self._look_ok_since = None
             if self._look_away_since is None:
                 self._look_away_since = timestamp
@@ -193,7 +193,7 @@ class FatigueMonitor:
                     event = self._emit(
                         EventType.DISTRACTED_STARTED,
                         timestamp,
-                        {"reason": "looking_away", "yaw": metrics.yaw, "pitch": metrics.pitch},  # type: ignore[union-attr]
+                        {"reason": "looking_away", "yaw": metrics.yaw, "pitch": metrics.pitch},
                     )
                     if event is not None:
                         events.append(event)

@@ -170,7 +170,7 @@ class VideoRecorder:
             return
         if size[0] <= 0 or size[1] <= 0:
             raise RecordingError(f"Invalid video frame size: {size}")
-        fourcc = cv2.VideoWriter_fourcc(*"mp4v")
+        fourcc = cv2.VideoWriter.fourcc(*"mp4v")
         self._writer = cv2.VideoWriter(str(self.path), fourcc, self.fps, size)
         if not self._writer.isOpened():
             self._writer = None

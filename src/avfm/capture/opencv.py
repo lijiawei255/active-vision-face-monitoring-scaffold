@@ -5,6 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import cv2
+import numpy as np
 
 from avfm.capture.base import FrameSource, apply_flip
 from avfm.clock import Clock, MonotonicClock
@@ -43,7 +44,7 @@ class OpenCVFrameSource(FrameSource):
         self.realtime = realtime
         self.clock = clock or MonotonicClock()
         self._cap: cv2.VideoCapture | None = None
-        self._image = None
+        self._image: np.ndarray | None = None
         self._index = 0
         self._file_fps = fps
         self._opened = False
@@ -58,13 +59,14 @@ class OpenCVFrameSource(FrameSource):
             return
 
         if self.kind == "webcam":
-            path = int(self.target)
+            path: str | int = int(self.target)
+            cap = cv2.VideoCapture(path)
         else:
-            path = str(self.target)
-            if not Path(path).exists():
-                raise CameraError(f"Video file not found: {path}")
+            video_path = str(self.target)
+            if not Path(video_path).exists():
+                raise CameraError(f"Video file not found: {video_path}")
+            cap = cv2.VideoCapture(video_path)
 
-        cap = cv2.VideoCapture(path)
         if not cap.isOpened():
             cap.release()
             raise CameraError(
@@ -93,6 +95,7 @@ class OpenCVFrameSource(FrameSource):
             if self._index > 0:
                 return None
             self._index += 1
+            assert self._image is not None
             image = apply_flip(self._image, self.flip)
             return Frame(image=image, timestamp=0.0, index=0, source=self.description)
 

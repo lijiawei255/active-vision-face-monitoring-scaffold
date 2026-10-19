@@ -21,6 +21,8 @@ def setup_logging(level: str = "INFO", log_file: str | Path | None = None) -> lo
         if getattr(handler, "_avfm_managed", False):
             logger.removeHandler(handler)
 
+    # ``_avfm_managed`` marks handlers owned by this module; ``logging.Handler``
+    # has no typed slot for it, so the attribute assignment needs an ignore.
     stream = logging.StreamHandler()
     stream.setFormatter(logging.Formatter(_FORMAT))
     stream._avfm_managed = True  # type: ignore[attr-defined]

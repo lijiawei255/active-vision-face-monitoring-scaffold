@@ -11,7 +11,7 @@ from avfm.detection.base import FaceDetector
 from avfm.detection.mediapipe import MediaPipeDetector
 from avfm.detection.yunet import YuNetDetector
 from avfm.errors import DependencyMissingError, ModelNotFoundError
-from avfm.models import MEDIAPIPE, YUNET, model_root, resolve_model_path
+from avfm.models import MEDIAPIPE, YUNET, ModelSpec, model_root, resolve_model_path
 
 _DOWNLOAD_HINT = "Run: avfm models download --all  (or --only yunet / --only mediapipe)"
 
@@ -45,7 +45,7 @@ def mediapipe_available() -> bool:
     return importlib.util.find_spec("mediapipe") is not None
 
 
-def model_ready(spec, configured: str | Path | None, root: Path | None = None) -> bool:
+def model_ready(spec: ModelSpec, configured: str | Path | None, root: Path | None = None) -> bool:
     path = resolve_model_path(spec, configured, root)
     return path.exists()
 

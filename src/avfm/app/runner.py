@@ -91,9 +91,7 @@ class Runner:
                         show = False
                 if video_enabled and annotated is not None and recorder is not None:
                     try:
-                        recorder.write_video(  # type: ignore[attr-defined]
-                            annotated, timestamp=frame.timestamp
-                        )
+                        recorder.write_video(annotated, timestamp=frame.timestamp)
                     except Exception as exc:
                         raise RecordingError(f"Video recording failed: {exc}") from exc
 

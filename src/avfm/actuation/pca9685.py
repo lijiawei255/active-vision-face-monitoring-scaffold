@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+from typing import Any
 
 from avfm.actuation.base import Servo
 from avfm.errors import DependencyMissingError
@@ -51,8 +52,8 @@ class PCA9685Servo(Servo):
         self._max_pulse_us = max_pulse_us
         self._invert = invert
         self._angle = (angle_min + angle_max) / 2.0
-        self._kit = None
-        self._servo = None
+        self._kit: Any = None
+        self._servo: Any = None
 
     def _ensure(self) -> None:
         if self._servo is not None:

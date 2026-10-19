@@ -13,7 +13,7 @@ import os
 import tomllib
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, get_type_hints
+from typing import Any, cast, get_type_hints
 
 from avfm.errors import ConfigError
 
@@ -322,7 +322,7 @@ class AppConfig:
         return dataclasses.asdict(self)
 
 
-def _load_dataclass(cls: type, data: dict[str, Any], path: str = "") -> Any:
+def _load_dataclass(cls: type[Any], data: dict[str, Any], path: str = "") -> Any:
     hints = get_type_hints(cls)
     kwargs: dict[str, Any] = {}
     for key, value in data.items():
@@ -332,7 +332,7 @@ def _load_dataclass(cls: type, data: dict[str, Any], path: str = "") -> Any:
         if dataclasses.is_dataclass(field_type):
             if not isinstance(value, dict):
                 raise ConfigError(f"{path}{key} must be a table")
-            kwargs[key] = _load_dataclass(field_type, value, f"{path}{key}.")
+            kwargs[key] = _load_dataclass(cast(type[Any], field_type), value, f"{path}{key}.")
         else:
             kwargs[key] = value
     try:

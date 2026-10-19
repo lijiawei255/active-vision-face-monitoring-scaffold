@@ -53,7 +53,7 @@ def _euler_from_rotation(rotation: np.ndarray) -> tuple[float, float, float]:
         yaw = math.atan2(-rotation[2, 0], sy)
         pitch = math.atan2(-rotation[1, 2], rotation[1, 1])
         roll = 0.0
-    return tuple(math.degrees(value) for value in (yaw, pitch, roll))  # type: ignore[return-value]
+    return math.degrees(yaw), math.degrees(pitch), math.degrees(roll)
 
 
 def estimate_head_pose(
