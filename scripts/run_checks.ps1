@@ -10,6 +10,9 @@ conda run -n avfm ruff check src tests
 Write-Host "== ruff format check =="
 conda run -n avfm ruff format --check src tests
 
+Write-Host "== mypy =="
+conda run -n avfm python -m mypy
+
 Write-Host "== docs parity =="
 conda run -n avfm python scripts/check_docs_parity.py
 Write-Host "== docs links =="
