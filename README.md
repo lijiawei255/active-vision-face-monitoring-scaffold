@@ -6,7 +6,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python 3.11](https://img.shields.io/badge/python-3.11-blue.svg)](pyproject.toml)
 
-> **Status: v0.1.1 alpha.** Desktop simulation, synthetic/real detector tests and a Windows
+> **Status: v0.1.2 alpha.** Desktop simulation, synthetic/real detector tests and a Windows
 > webcam passive run are verified locally. Raspberry Pi hardware (Picamera2 + PCA9685 + servos)
 > is implemented and contract-tested but **has not yet been executed on physical hardware** in
 > this repository. See [Verification matrix](#verification-matrix).
@@ -198,7 +198,7 @@ The parent project used the same mounting.
 
 | Layer | Windows laptop | Raspberry Pi 5 |
 |---|---|---|
-| Unit / integration / SIL / cadence / CLI tests | ✅ 132 passed, 81% coverage (Python 3.11.17, OpenCV 5.0.0, MediaPipe 1.1.1) | ✅ pure Python; not run on Pi yet |
+| Unit / integration / SIL / cadence / CLI tests | ✅ 133 passed, 81% coverage (Python 3.11.17, OpenCV 5.0.0, MediaPipe 1.1.1) | ✅ pure Python; not run on Pi yet |
 | YuNet + MediaPipe on public-domain image | ✅ 1 face, 478 landmarks, EAR 0.308 | not run |
 | Windows webcam capture / passive loop | ✅ 58 frames in 5s, ~11.5 fps, avg loop ~15.9 ms; **no face was guaranteed in front of the camera during the automated run** | n/a |
 | Webcam real-face tracking | ⚠️ not controlled in this automated run; detector accuracy is covered by the image test | n/a |

@@ -12,6 +12,6 @@ from importlib import metadata
 try:  # pragma: no cover - exercised by installed package and editable install
     __version__ = metadata.version("avfm")
 except metadata.PackageNotFoundError:  # pragma: no cover
-    __version__ = "0.1.1"
+    __version__ = "0.1.2"
 
 __all__ = ["__version__"]

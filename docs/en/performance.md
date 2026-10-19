@@ -50,12 +50,12 @@ fatigue_interval_frames = 2
 The first frame includes model initialization and is not representative; use
 `scripts/rpi_bench.py` (which discards warm-up) for HIL numbers.
 
-## Measured on the Windows development laptop (v0.1.1)
+## Measured on the Windows development laptop (v0.1.2)
 
 | Item | Result |
 |---|---|
 | Python / OpenCV / MediaPipe | 3.11.17 / 5.0.0 / 1.1.1 |
-| Core tests | 132 passed; 81% coverage |
+| Core tests | 133 passed; 81% coverage |
 | YuNet on `tests/data/astronaut.jpg` | 1 face, score 0.932 |
 | MediaPipe on same image | 1 face, 478 landmarks, EAR 0.308, yaw 34.2°, pitch 5.6°, roll 11.7° |
 | Webcam passive run (5 s) | 58 frames, ~11.5 fps, avg loop ~15.9 ms |

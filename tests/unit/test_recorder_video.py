@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import numpy as np
@@ -37,3 +38,17 @@ def test_session_recorder_video(tmp_path: Path, config: AppConfig) -> None:
     recorder.close()
     assert (tmp_path / "session" / "annotated.mp4").exists()
     assert (tmp_path / "session" / "run.json").exists()
+
+
+def test_run_manifest_omits_loaded_from(tmp_path: Path, config: AppConfig) -> None:
+    config.loaded_from = (str(tmp_path / "configs" / "default.toml"),)
+    recorder = SessionRecorder(
+        tmp_path / "manifest",
+        config=config,
+        source="test",
+        detector="fake",
+        actuator="none",
+    )
+    recorder.close()
+    data = json.loads((tmp_path / "manifest" / "run.json").read_text(encoding="utf-8"))
+    assert "loaded_from" not in data["config"]

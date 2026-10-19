@@ -225,6 +225,16 @@ class VideoRecorder:
             self._writer = None
 
 
+def _config_for_manifest(config: Any) -> Any:
+    """Serialize config without local absolute paths in a shareable run manifest."""
+    if not hasattr(config, "to_dict"):
+        return config
+    data = config.to_dict()
+    if isinstance(data, dict):
+        data.pop("loaded_from", None)
+    return data
+
+
 class SessionRecorder:
     """Write ``run.json`` + ``session.jsonl`` and optionally an annotated video."""
 
@@ -258,7 +268,7 @@ class SessionRecorder:
             "source": source,
             "detector": detector,
             "actuator": actuator,
-            "config": config.to_dict() if hasattr(config, "to_dict") else config,
+            "config": _config_for_manifest(config),
         }
         self._write_run()
 

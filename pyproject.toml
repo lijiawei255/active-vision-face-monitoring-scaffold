@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "avfm"
-version = "0.1.1"
+version = "0.1.2"
 description = "Active Vision Face Monitoring: a hardware-agnostic, testable scaffold for 2-DOF PID gimbal face tracking and fatigue monitoring."
 readme = "README.md"
 requires-python = ">=3.11"

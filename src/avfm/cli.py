@@ -17,7 +17,6 @@ import cv2
 
 from avfm import __version__
 from avfm.actuation.factory import create_actuator
-from avfm.app.overlay import OverlayRenderer
 from avfm.app.pipeline import Pipeline
 from avfm.app.recorder import NullRecorder, SessionRecorder
 from avfm.app.replay import replay_session
@@ -80,12 +79,6 @@ def _build_parser() -> argparse.ArgumentParser:
     run.add_argument("--realtime", action="store_true", help="Pace video files in real time")
     run.add_argument("--record-dir", default=None)
     run.add_argument("--record-video", action="store_true")
-    run.add_argument(
-        "--overlay-scale",
-        type=float,
-        default=None,
-        help="Font/line multiplier for the annotated video; try 1.5 for phone viewing",
-    )
     run.add_argument("--report-json", default=None)
     run.add_argument("--calibration-file", default=None)
     run.add_argument("--no-fatigue", action="store_true")
@@ -291,8 +284,7 @@ def cmd_run(args: argparse.Namespace) -> int:
         calibration=calibration,
     )
     show = config.runtime.show if args.show is None else args.show
-    overlay = OverlayRenderer(scale=args.overlay_scale) if args.overlay_scale else None
-    report = Runner(overlay=overlay).run(
+    report = Runner().run(
         source,
         pipeline,
         duration=args.duration,

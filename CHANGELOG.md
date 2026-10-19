@@ -4,6 +4,17 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and versioning follows
 [Semantic Versioning](https://semver.org/).
 
+## [0.1.2] - 2026-10-20
+
+### Changed
+
+- Restored the compact default HUD for normal desktop/passive use. The large demo typography and
+  the demonstration-only `--overlay-scale` CLI switch were removed.
+- `run.json` no longer records the absolute local `loaded_from` config paths; the rest of the
+  resolved configuration is still present for reproducibility.
+- Kept the information fixes from v0.1.1: actual camera FPS, `EAR --` for invalid samples,
+  immediate `EYES CLOSED`, and the drowsiness cause.
+
 ## [0.1.1] - 2026-10-20
 
 ### Added
